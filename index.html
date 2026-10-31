@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Platform</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f8; }
+        .dashboard { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; }
+        .box { border: 1px solid #e1e4e8; padding: 15px; border-radius: 6px; background-color: #fff; margin-top: 20px; }
+        p { color: #666; font-size: 16px; }
+        #balance { font-size: 24px; font-weight: bold; color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>My Trading Dashboard</h1>
+        <div class="box">
+            <p>Account Balance:</p>
+            <span id="balance">Loading...</span>
+        </div>
+    </div>
+    <script>
+        const app_id = 1089;
+const ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${app_id}`);
+
+ws.onmessage = async (msg) => {
+    const data = JSON.parse(msg.data);
+    if (data.msg_type === 'authorize') {
+        ws.send(JSON.stringify({ balance: 1 }));
+    } else if (data.msg_type === 'balance') {
+        document.getElementById('balance').innerText = `${data.balance.balance} ${data.balance.currency}`;
+    }
+};
+
+ws.onopen = () => {
+    ws.send(JSON.stringify({ authorize: 'pat_c7415051aec4a079bf8faaa4037ca6bc91b45e9fddd6b1f760307e31dbdb445b' }));
+};
+    </script>
+</body>
+</html>
